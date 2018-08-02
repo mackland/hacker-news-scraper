@@ -2,6 +2,7 @@ from requests import get
 from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
+from math import ceil
 import json, sys, argparse
 
 MAX_NUM_POSTS = 100
@@ -11,11 +12,20 @@ class HackerNewsScraper:
 
     def __init__(self, posts):
         self._total_posts = posts
+        self._total_pages = int(ceil(posts/30))
         self._stories = []
 
+    
     def scrape_stories(self):
-        html = get_html(self.URL)
-        self.parse_stories(html)
+        page = 1
+
+        while(page <= self._total_pages):
+            url = '{}?p={}'.format(self.URL, page)
+            
+            html = get_html(url)
+            self.parse_stories(html)
+            page += 1
+
 
     def parse_stories(self, html):
         for storytext, subtext in zip(html.find_all('tr', {'class': 'athing'}),
@@ -44,6 +54,7 @@ class HackerNewsScraper:
             if len(self._stories) >= self._total_posts:
                 return
     
+    
     def print_stories(self):
         json.dump(self._stories, sys.stdout, indent=4)
 
@@ -55,6 +66,7 @@ def get_html(url):
         html = BeautifulSoup(response, 'html.parser')
 
     return html
+
 
 def get_response(url):
     try:
@@ -68,19 +80,23 @@ def get_response(url):
         log_error('Error during requests to {0} : {1}'.format(url, str(e)))
         return None
 
+
 def is_good_response(resp):
     content_type = resp.headers['Content-Type'].lower()
     return (resp.status_code == 200
             and content_type is not None
             and content_type.find('html') > -1)
 
+
 def log_error(e):
     print(e)
+
 
 def validate_input(arg, arg_max):
     error_msg = 'Posts cannot exceed {}'.format(arg_max)
     if arg > arg_max:
         raise argparse.ArgumentTypeError(error_msg)
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -91,16 +107,18 @@ def parse_arguments():
 
     return args.posts
 
+
 def main():
     try:
         posts = parse_arguments()
-
+#        print(posts)
         hnews_scraper = HackerNewsScraper(posts)
         hnews_scraper.scrape_stories()
         hnews_scraper.print_stories()
 
     except argparse.ArgumentTypeError as ex:
         log_error(ex)
+
 
 if __name__ == '__main__':
     main()
