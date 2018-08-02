@@ -3,7 +3,7 @@ from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
 from math import ceil
-import json, sys, argparse
+import json, sys, argparse, validators
 
 MAX_NUM_POSTS = 100
 
@@ -49,8 +49,10 @@ class HackerNewsScraper:
                     'points' : points,
                     'rank' : rank
                     }
-
+            
+            story = validate_story(story)
             self._stories.append(story)
+
             if len(self._stories) >= self._total_posts:
                 return
     
@@ -66,6 +68,50 @@ def get_html(url):
         html = BeautifulSoup(response, 'html.parser')
 
     return html
+
+
+def validate_story(story):
+    if not valid_title(story['title']):
+        story['title'] = 'Valid title not found'
+
+    if not valid_author(story['author']):
+        story['author'] = 'Valid author not found'
+
+    if not valid_uri(story['uri']):
+        story['uri'] = 'Valid URI not found'
+
+    story['comments'] = validate_number(story['comments'])
+    story['points'] = validate_number(story['points'])
+    story['rank'] = validate_number(story['rank'])
+
+    return story
+
+
+def valid_title(title):
+    return (len(title) <= 256 and title)
+
+
+def valid_author(author):
+    if(author.find(' ') > -1):  #Hacker news username doesnt support whitespace
+        return False
+    return (len(author) <= 256 and author)
+
+
+def valid_uri(url):
+    if(validators.url(url)):
+        return True
+    return False
+
+
+def validate_number(numString):
+    if numString.find('ago') > -1:      #If not found, time since posted would replace points
+        return 0
+    
+    digits = [int(s) for s in numString.split() if s.isdigit()]
+
+    if len(digits) > 0:
+        return digits[0]
+    return 0
 
 
 def get_response(url):
