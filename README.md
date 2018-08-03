@@ -63,10 +63,10 @@ Tests performed are:
 I have used BeautifulSoup before to handle HTML/XML processing and building a web scraper. Since we only need to visit a specific webpage, it is enough to complete the task. Page numbers can easily be changed manually. The reason I used it for my previous project is that it came highly recommended from the community and I found it very easy to use for getting the required data from the webpage. Documentation is also clear and it also helps that it is so frequently used in the Python community when looking for help.
 
 ### Requests
-Similar to BeautifulSoup, I have used Requests before in my previous project to perform HTTP requests. It was very easy to use and well documented which is the main reason I continued to use it.
+Similar to BeautifulSoup, I have used Requests before in my previous project to perform HTTP requests. It is secure and simple, and we only need it to make one get request. It was very easy to use and well documented which is the main reason I continued to use it.
 
 ### PyTest
-I had to look for this module for this project as I have not done much unit testing in Python. The reason I chose it was that it was highly recommended and easy enough to set up a few test cases and run in no time at all. I did this writing a small HTML file based on Hacker News layout with one correct article and one incorrect that broke against every one of the desired rules. I then tested the two against the desired rules.
+I had to look for this module for this project as I have not done much unit testing in Python. The reason I chose it was that it was highly recommended and easy enough to set up a few test cases and run in no time. I did this writing a small HTML file based on Hacker News layout with one correct article and one incorrect that broke against every one of the desired rules. I then tested the two against the desired rules.
 
 ### Validators
 This I also had to look up for this project. From what I found online there are some better validators but this was extremely easy to use and got the job done.
