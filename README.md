@@ -54,7 +54,7 @@ this will show the data validation passing the 5 tests on a sample html file tha
 
 Tests performed are:
 - ```Title and author are non empty strings not longer than 256 characters.```
-- ```uri is a valid URI```
+- ```uri is a valid URL```
 - ```Points, comments and rank are integers >= 0.```
 
 ## Libraries used and why
@@ -66,7 +66,7 @@ I have used BeautifulSoup before to handle HTML/XML processing and building a we
 Similar to BeautifulSoup, I have used Requests before in my previous project to perform HTTP requests. It was very easy to use and well documented which is the main reason I continued to use it.
 
 ### PyTest
-I had to look for this module for this project as I have not done much unit testing in Python. The reason I chose it was that it was highly recommended and easy enough to set up a few test cases. I did this writing a small HTML file based on Hacker News layout with one correct article and one incorrect that broke against every one of the desired rules. I then tested the two against the desired rules.
+I had to look for this module for this project as I have not done much unit testing in Python. The reason I chose it was that it was highly recommended and easy enough to set up a few test cases and run in no time at all. I did this writing a small HTML file based on Hacker News layout with one correct article and one incorrect that broke against every one of the desired rules. I then tested the two against the desired rules.
 
 ### Validators
 This I also had to look up for this project. From what I found online there are some better validators but this was extremely easy to use and got the job done.
