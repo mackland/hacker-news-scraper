@@ -53,9 +53,9 @@ pytest test_scraper.py
 this will show the data validation passing the 5 tests on a sample html file that contains 1 article from Hacker News and one with incorrect data.
 
 Tests performed are:
-```Title and author are non empty strings not longer than 256 characters.```
-```uri is a valid URI```
-```Points, comments and rank are integers >= 0.```
+- ```Title and author are non empty strings not longer than 256 characters.```
+- ```uri is a valid URI```
+- ```Points, comments and rank are integers >= 0.```
 
 ## Libraries used and why
 
