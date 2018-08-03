@@ -1,0 +1,7 @@
+[
+  "test_scraper.py::test_string_length",
+  "test_scraper.py::test_empty_string",
+  "test_scraper.py::test_URL",
+  "test_scraper.py::test_integers",
+  "test_scraper.py::test_numbers_range"
+]
