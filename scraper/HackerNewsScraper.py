@@ -54,8 +54,8 @@ class HackerNewsScraper:
                     'title' : title,
                     'uri' : uri,
                     'author' : author,
-                    'comments' : comments,
                     'points' : points,
+                    'comments' : comments,
                     'rank' : rank
                     }
 
