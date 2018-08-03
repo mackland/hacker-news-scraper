@@ -17,23 +17,32 @@ class HackerNewsScraper:
 
     
     def scrape_stories(self):
+        """
+        Fetches all HTML data.
+        Each page is limited to 30 stories, this function will ensure enough pages are fetched.
+        """
         page = 1
 
-        while(page <= self._total_pages):
+        while(page <= self._total_pages):           # Makes sure to visit sufficient amount of pages
             url = '{}?p={}'.format(self.URL, page)
             
             html = get_html(url)
             self.parse_stories(html)
             page += 1
 
-
+    
     def parse_stories(self, html):
+        """
+        Given a BeautifulSoup nested data structure, html. parse_stories(html) will parse the data and select the desired fields.
+        After getting title, uri, author, comments, points, and rank, it will save them in dictionary form in self._stories.
+        """
         for storytext, subtext in zip(html.find_all('tr', {'class': 'athing'}),
                                     html.find_all('td', {'class': 'subtext'})):
             
             storylink = storytext.find_all('a',{'class':'storylink'})
             sublink = subtext.select('a')
-
+            
+            # All requested data being saved in the dictionary story below
             title = storylink[0].text.strip()
             uri = storylink[0]['href']
             author = sublink[0].text
@@ -49,22 +58,37 @@ class HackerNewsScraper:
                     'points' : points,
                     'rank' : rank
                     }
-            
-            story = validate_story(story)
-            self._stories.append(story)
 
+            # Make sure data satisfies requirements
+            story = validate_story(story)
+            
+            # self._stories is an array of dictionaries that saves the requested number of stories
+            self._stories.append(story)
+            
+            # If required number of stories met, stop parsing
             if len(self._stories) >= self._total_posts:
                 return
     
     
     def print_stories(self):
+        """
+        Outputs the stories from list of dictionary format to JSON in STDOUT.
+        """
         json.dump(self._stories, sys.stdout, indent=4)
-
+    
+    
     def get_stories(self):
+        """
+        Returns the scraped stories to the user in a list of dictionary format.
+        Used for testing purposes.
+        """
         return self._stories
 
 
 def get_html(url):
+    """
+    Runs the HTML data through BeautifulSoup to get a BeautifulSoup object, a nested data structure.
+    """
     response = get_response(url)
 
     if response is not None:
@@ -74,6 +98,10 @@ def get_html(url):
 
 
 def validate_story(story):
+    """
+    Ensures that all the story data is valid according to the task.
+    Will return valid data for each field.
+    """
     story['title'] = story['title'][:256]
     if not valid_title(story['title']):
         story['title'] = 'Valid title not found'
@@ -93,23 +121,38 @@ def validate_story(story):
 
 
 def valid_title(title):
+    """
+    Ensures that title is non empty string with <= 256 characters
+    """
     return (len(title) <= 256 and title)
 
 
 def valid_author(author):
+    """
+    Ensures that author is non empty string and <= 256 characters.
+    Solved the issue of not finding an author by checking the fetched data with HN username rules.
+    """
     if(author.find(' ') > -1):  #Hacker news username doesnt support whitespace
         return False
     return (len(author) <= 256 and author)
 
 
 def valid_uri(url):
+    """
+    To be able to find the scraped stories, we need their URL.
+    If data is not a valid URL, return False.
+    """
     if(validators.url(url)):
         return True
     return False
 
 
 def validate_number(numString):
-    if numString.find('ago') > -1:      #If not found, time since posted would replace points
+    """
+    Will make sure that the returned number is an integer.
+    Will strip any non digits from the input and return the first number.
+    """
+    if numString.find('ago') > -1:      #If not found, 'time since posted' would replace points for example
         return 0
     
     digits = [int(s) for s in numString.split() if s.isdigit()]
@@ -120,6 +163,11 @@ def validate_number(numString):
 
 
 def get_response(url):
+    """
+    Attempts to get the content at 'url' by making an HTTP GET request.
+    If the content-type of response is some kind of HTML/XML, return the
+    text content, otherwise return None.
+    """
     try:
         with closing(get(url, stream=True)) as resp:
             if is_good_response(resp):
@@ -133,6 +181,9 @@ def get_response(url):
 
 
 def is_good_response(resp):
+    """
+    Returns True if the response seems to be HTML, False otherwise.
+    """
     content_type = resp.headers['Content-Type'].lower()
     return (resp.status_code == 200
             and content_type is not None
@@ -140,16 +191,26 @@ def is_good_response(resp):
 
 
 def log_error(e):
+    """
+    Log the errors. Currently just printing them out to user.
+    """
     print(e)
 
 
 def validate_input(arg, arg_max):
+    """
+    Validate the user input. Makes sure it is less than or equal to 100 posts.
+    """
     error_msg = 'Posts cannot exceed {}'.format(arg_max)
     if arg > arg_max:
         raise argparse.ArgumentTypeError(error_msg)
 
 
+# Parses the number of posts input from user. Default is 10.
 def parse_arguments():
+    """
+    Parses the argument input from the user. Default is 10.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--posts', '-p', metavar='n', type=int, default=10, help='number of posts (max 100)')
     args = parser.parse_args()
@@ -160,9 +221,12 @@ def parse_arguments():
 
 
 def main():
+    """
+    If user input is valid, will create a scraper and fetch requests number of posts and print them to the user.
+    """
     try:
         posts = parse_arguments()
-#        print(posts)
+        
         hnews_scraper = HackerNewsScraper(posts)
         hnews_scraper.scrape_stories()
         hnews_scraper.print_stories()
