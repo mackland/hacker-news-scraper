@@ -10,8 +10,8 @@ Running `python HackerNewsScraper.py --posts 1` returned the following:
     'title': 'JPL Open-Source Rover Project Based on the Rovers on Mars',
     'uri': 'https://github.com/nasa-jpl/open-source-rover',
     'author': 'ghosthamlet',
-    'comments': 5,
     'points': 46,
+    'comments': 5,
     'rank': 1
   }
 ]
